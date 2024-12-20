@@ -74,8 +74,7 @@ commands:Register("viptogglestatus", function(playerid, args, argc, silent, pref
     end
 
     PlayerFeaturesStatus[steamid][feature] = not PlayerFeaturesStatus[steamid][feature]
-    db:Query(string.format("update %s set features_status = '%s' where steamid = '%s' limit 1",
-        config:Fetch("vips.table_name"), json.encode(PlayerFeaturesStatus[steamid]), steamid))
+    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Update({ features_status = json.encode(PlayerFeaturesStatus[steamid])}):Where("steamid", "=", steamid):Execute()
 
     player:ExecuteCommand("sw_vipopenfeaturemenu " .. feature)
 end)

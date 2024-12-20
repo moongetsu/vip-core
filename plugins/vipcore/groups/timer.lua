@@ -7,9 +7,7 @@ SetTimer(10000, function()
                 local group = player:GetVar("vip.group")
                 if group ~= "none" and group ~= nil then
                     if expiretime ~= 0 and (expiretime or os.time()) - os.time() < 0 or not GroupsMap[group] then
-                        db:Query(string.format("delete from %s where steamid = '%s' limit 1",
-                            config:Fetch("vips.table_name"), tostring(player:GetSteamID())))
-
+                        db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Delete():Where("steamid", "=", tostring(player:GetSteamID()))
                         player:SetVar("vip.group", "none")
                         ExpireTimes[tostring(player:GetSteamID())] = nil
                     end

@@ -12,15 +12,13 @@ commands:Register("addvip", function(playerid, args, argc, silent)
     if not GroupsMap[groupid] then return print("Error: Invalid Group ID.") end
     if duration < 0 then return print("Error: Duration needs to be a positive number") end
 
-    db:Query(string.format("select * from %s where steamid = '%s' limit 1", config:Fetch("vips.table_name"), steamid64),
-        function(err, result)
+    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Select({}):Where("steamid", "=", steamid64):Execute(function (err, result)
             if #err > 0 then
                 return print("ERROR: " .. err)
             end
 
             if #result == 0 then
-                db:Query(string.format("insert ignore into %s (steamid, groupid, expiretime) values ('%s', '%s', '%d')",
-                    config:Fetch("vips.table_name"), steamid64, groupid, duration == 0 and 0 or os.time() + duration))
+                db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Insert({steamid = steamid64, groupid = groupid, expiretime = (duration == 0 and 0 or os.time() + duration)}):Execute()
                 print(string.format("Player %s is having VIP Group '%s' for %s.", steamid64, groupid,
                     ComputePrettyTime(duration)))
                 local pids = FindPlayersByTarget(steamid64, false)
@@ -41,7 +39,7 @@ commands:Register("removevip", function(playerid, args, argc, silent)
 
     local steamid64 = args[1]
 
-    db:Query(string.format("delete from %s where steamid = '%s' limit 1", config:Fetch("vips.table_name"), steamid64))
+    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Delete():Where("steamid", "=", steamid64):Execute()
     print(string.format("Player %s is no longer having a VIP Group.", steamid64))
     local pids = FindPlayersByTarget(steamid64, false)
     if #pids == 0 then return end

@@ -2,9 +2,16 @@ AddEventHandler("OnPluginStart", function(event)
     db = Database("swiftly_vipcore")
     if not db:IsConnected() then return EventResult.Continue end
 
-    db:Query(string.format(
-        "CREATE TABLE IF NOT EXISTS %s (`steamid` VARCHAR(64) NOT NULL, `groupid` TEXT NOT NULL, `expiretime` INT NOT NULL, `features_status` JSON NOT NULL DEFAULT '{}', UNIQUE (`steamid`)) ENGINE = InnoDB; ",
-        config:Fetch("vips.table_name")))
+    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Create({
+        steamid = "string|max:128|unique",
+        groupid = "string|max:128|unique",
+        expiretime = "integer",
+        features_status = "json|default:{}"
+    }):Execute(function (err, result)
+        if #err > 0 then
+            print("ERROR: " .. err)
+        end
+    end)
 
     LoadVipGroups()
     LoadVipPlayers()
@@ -26,7 +33,7 @@ function GetPluginAuthor()
 end
 
 function GetPluginVersion()
-    return "v1.0.1"
+    return "v1.0.2"
 end
 
 function GetPluginName()

@@ -24,9 +24,8 @@ function LoadPlayerGroup(playerid)
     PlayerFeaturesStatus[steamid] = nil
     ExpireTimes[steamid] = nil
 
-    db:Query(string.format("select * from %s where steamid = '%s' limit 1", config:Fetch("vips.table_name"), steamid),
-        function(error, result)
-            if #error > 0 then
+    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Select({}):Where("steamid", "=", steamid):Execute(function (err, result)
+            if #err > 0 then
                 print("ERROR: " .. error)
                 return
             end
@@ -36,8 +35,7 @@ function LoadPlayerGroup(playerid)
                 local expiretime = result[1].expiretime
                 local featurestatus = json.decode(result[1].features_status)
                 if expiretime ~= 0 and expiretime - os.time() <= 0 or not GroupsMap[groupid] then
-                    db:Query(string.format("delete from %s where steamid = '%s' limit 1", config:Fetch("vips.table_name"),
-                        steamid))
+                    db:QueryBuilder():Table(tostring(config:Fetch("vips.table_name"))):Delete():Where("steamid", "=", steamid):Execute()
                     player:SetVar("vip.group", "none")
                     ExpireTimes[steamid] = nil
                 else
