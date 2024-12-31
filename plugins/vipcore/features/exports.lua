@@ -73,3 +73,12 @@ export("UnregisterFeature", function(feature)
     end
     FeaturesTranslationMap[feature] = nil
 end)
+
+export("IsVip", function(playerid)
+    if playerid < 0 then return false end
+    local player = GetPlayer(playerid)
+    if not player then return false end
+    if player:IsFakeClient() then return false end
+
+    return player:GetVar("vip.group") ~= "none"
+end)

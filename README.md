@@ -60,6 +60,7 @@ The following exports are available:
 |   IsFeatureEnabled  |     playerid, feature    |                   Checks if the feature is enabled or disabled. It returns a boolean.                  |
 |  RegisterFeature |     feature, feature_title_translation_key    |                  Registers a feature in VIP Core.                 |
 | UnregisterFeature |     feature    |                 Unregisters a feature from VIP Core.                |
+|   IsVip |     playerid    |                 Checks if the player is a VIP. It returns a boolean.                |
 
 ### VIP Core Commnads 💬
 
